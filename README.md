@@ -21,6 +21,32 @@ The `-v` command enable a share folder between your local computer and docker im
 
 This project is based on [Jupyter Docker Stacks](https://jupyter-docker-stacks.readthedocs.io/en/latest/index.html), and, fell free to use other [Image options](https://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html). **Warnnig:** this approach will be required install aditional python libraries.
 
+## Oracle kubernets setup
+
+### Registry
+
+You need install [docker]('') in your local machine, and look your:
+
+- `<name_space>`,
+- `<your.user@domain.com>`
+- `<password>`
+
+Run the follow script:
+
+```bash
+# windows environment
+
+# loggin
+docker login us-ashburn-1.ocir.io --<username> <name_space>/oracleidentitycloudservice/<your.user@domain.com> -password '<password>'
+
+# tag your local image
+docker tag <image_name>:latest us-ashburn-1.ocir.io/<name_space>/<oci_repository_name>/<image_name:latest>
+
+# push to oracle registry
+docker push us-ashburn-1.ocir.io/name_space/repository_name/image_name:latest
+
+```
+
 ## Disclaimer
 
 The views expressed on this repository are my own and do not reflect the views of the company(ies) I work (or have worked for) neither Oracle Corporation. The opinions expressed by visitors on this repository are theirs, not mine.
