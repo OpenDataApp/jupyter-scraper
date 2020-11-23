@@ -46,7 +46,63 @@ docker tag <image_name>:latest us-ashburn-1.ocir.io/<name_space>/<oci_repository
 docker push us-ashburn-1.ocir.io/name_space/repository_name/image_name:latest
 
 ```
+### Kubertenes Configuration.
 
+Create kubernetes secrete
+```bash
+kubectl create secret docker-registry ocirsecret --docker-server=<region-key>.ocir.io --docker-username='<tenancy-namespace>/<oci-username>' --docker-password='<oci-auth-token>' --docker-email='<email-address>'
+
+```
+Kubernetes Manifest for Jupiter-scraper Service:
+
+```bash
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orionlad-deployment
+spec:
+  selector:
+    matchLabels:
+      app: orionlad
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: orionlad
+    spec:
+      containers:
+      - name: orionlad
+    # enter the path to your image, be sure to include the correct region prefix    
+        image: us-ashburn-1.ocir.io/<name_space>/<oci_repository_name>/<image_name:latest>
+        ports:
+        - containerPort: 8888
+      imagePullSecrets:
+    # enter the name of the secret you created  
+      - name: ocirsecret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orionlad-service
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8888
+    protocol: TCP
+    targetPort: 8888
+  selector:
+    app: orionlad
+```
+
+Deploy Kubernetes Service for Jupiter-scraper
+
+```bash
+kubectl create -f ./orionlad-lb.yml
+```
+View services IP
+```bash
+kubectl get services
+```
 ## Disclaimer
 
 The views expressed on this repository are my own and do not reflect the views of the company(ies) I work (or have worked for) neither Oracle Corporation. The opinions expressed by visitors on this repository are theirs, not mine.
